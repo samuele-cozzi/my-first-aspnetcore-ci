@@ -15,23 +15,19 @@ variables:
 
 steps:
   - script: |
+      # build_api
       docker login -u samuelecozzi -p $(docker_repo_pwd)
       docker build --pull -t $(docker_image):$(docker_stage_image) ./source
       docker tag $(docker_image):$(docker_stage_image) $(docker_image):$(docker_stage_image).v$(CI_PIPELINE_IID)
       docker push $(docker_image):$(docker_stage_image).v$(CI_PIPELINE_IID)
       #- exit 0
 
-# build_test:
-#   stage: build
-#   image: docker:latest
-#   services:
-#     - docker:dind
-#   script:
-#     - docker login -u samuelecozzi -p $docker_repo_pwd
-#     - docker build --pull -t $docker_image:$docker_test_image ./source/FooApi.e2etest
-#     - docker tag $docker_image:$docker_test_image $docker_image:$docker_test_image.v$CI_PIPELINE_IID
-#     - docker push $docker_image:$docker_test_image.v$CI_PIPELINE_IID
-#     #- exit 0
+      # build_test:
+      docker login -u samuelecozzi -p $docker_repo_pwd
+      docker build --pull -t $docker_image:$docker_test_image ./source/FooApi.e2etest
+      docker tag $docker_image:$docker_test_image $docker_image:$docker_test_image.v$CI_PIPELINE_IID
+      docker push $docker_image:$docker_test_image.v$CI_PIPELINE_IID
+      #- exit 0
 
 # deploy_stage_api:
 #   stage: deploy-stage
