@@ -11,111 +11,106 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-
-stages:
-  - build
-  - deploy-stage
-  - test
-  - deploy-prod
-
-variables:
   K8S_STABLE_VERSION_URL: https://storage.googleapis.com/kubernetes-release/release/v1.10.4/bin/linux/amd64/kubectl
 
-build_api:
-  stage: build
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - docker login -u samuelecozzi -p $docker_repo_pwd
-    - docker build --pull -t $docker_image:$docker_stage_image ./source
-    - docker tag $docker_image:$docker_stage_image $docker_image:$docker_stage_image.v$CI_PIPELINE_IID
-    - docker push $docker_image:$docker_stage_image.v$CI_PIPELINE_IID
+
+
+steps:
+- script: dotnet build --configuration $(buildConfiguration)
+  
+  
+
+steps:
+  script: |
+    docker login -u samuelecozzi -p $docker_repo_pwd
+    docker build --pull -t $docker_image:$docker_stage_image ./source
+    docker tag $docker_image:$docker_stage_image $docker_image:$docker_stage_image.v$CI_PIPELINE_IID
+    docker push $docker_image:$docker_stage_image.v$CI_PIPELINE_IID
     #- exit 0
 
-build_test:
-  stage: build
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - docker login -u samuelecozzi -p $docker_repo_pwd
-    - docker build --pull -t $docker_image:$docker_test_image ./source/FooApi.e2etest
-    - docker tag $docker_image:$docker_test_image $docker_image:$docker_test_image.v$CI_PIPELINE_IID
-    - docker push $docker_image:$docker_test_image.v$CI_PIPELINE_IID
-    #- exit 0
+# build_test:
+#   stage: build
+#   image: docker:latest
+#   services:
+#     - docker:dind
+#   script:
+#     - docker login -u samuelecozzi -p $docker_repo_pwd
+#     - docker build --pull -t $docker_image:$docker_test_image ./source/FooApi.e2etest
+#     - docker tag $docker_image:$docker_test_image $docker_image:$docker_test_image.v$CI_PIPELINE_IID
+#     - docker push $docker_image:$docker_test_image.v$CI_PIPELINE_IID
+#     #- exit 0
 
-deploy_stage_api:
-  stage: deploy-stage
-  environment:
-    name: Stage
-  script: 
-    - echo "Deploy to Stage server"
-    - env
-    - apk add --no-cache curl
-    - curl -LO $K8S_STABLE_VERSION_URL
-    - chmod +x ./kubectl
-    - mv ./kubectl /usr/local/bin/kubectl
-    - mkdir ~/.kube
-    - cp $KUBECONFIG ~/.kube/config
-    - cat ~/.kube/config
-    - kubectl cluster-info
-    - kubectl get nodes
-    - sed -i "s/__CI_PIPELINE_IID__/${CI_PIPELINE_IID}/" k8s-stage-deploy.yml
-    - kubectl apply -f k8s-stage-deploy.yml
-    - kubectl describe po my-first-aspnet-ci
-  dependencies:
-    - build_api
+# deploy_stage_api:
+#   stage: deploy-stage
+#   environment:
+#     name: Stage
+#   script: 
+#     - echo "Deploy to Stage server"
+#     - env
+#     - apk add --no-cache curl
+#     - curl -LO $K8S_STABLE_VERSION_URL
+#     - chmod +x ./kubectl
+#     - mv ./kubectl /usr/local/bin/kubectl
+#     - mkdir ~/.kube
+#     - cp $KUBECONFIG ~/.kube/config
+#     - cat ~/.kube/config
+#     - kubectl cluster-info
+#     - kubectl get nodes
+#     - sed -i "s/__CI_PIPELINE_IID__/${CI_PIPELINE_IID}/" k8s-stage-deploy.yml
+#     - kubectl apply -f k8s-stage-deploy.yml
+#     - kubectl describe po my-first-aspnet-ci
+#   dependencies:
+#     - build_api
 
-deploy_stage_test:
-  stage: deploy-stage
-  environment:
-    name: Stage
-  script: 
-    # - echo "Deploy to Stage server"
-    # - env
-    # - apk add --no-cache curl
-    # - curl -LO $K8S_STABLE_VERSION_URL
-    # - chmod +x ./kubectl
-    # - mv ./kubectl /usr/local/bin/kubectl
-    # - mkdir ~/.kube
-    # - cp $KUBECONFIG ~/.kube/config
-    # - cat ~/.kube/config
-    # - kubectl cluster-info
-    # - kubectl get nodes
-    # - sed -i "s/__CI_PIPELINE_IID__/${CI_PIPELINE_IID}/" k8s-stage-deploy.yml
-    # - kubectl apply -f k8s-stage-deploy.yml
-    # - kubectl describe po my-first-aspnet-ci
-    - exit 0
-  dependencies:
-    - build_test
+# deploy_stage_test:
+#   stage: deploy-stage
+#   environment:
+#     name: Stage
+#   script: 
+#     # - echo "Deploy to Stage server"
+#     # - env
+#     # - apk add --no-cache curl
+#     # - curl -LO $K8S_STABLE_VERSION_URL
+#     # - chmod +x ./kubectl
+#     # - mv ./kubectl /usr/local/bin/kubectl
+#     # - mkdir ~/.kube
+#     # - cp $KUBECONFIG ~/.kube/config
+#     # - cat ~/.kube/config
+#     # - kubectl cluster-info
+#     # - kubectl get nodes
+#     # - sed -i "s/__CI_PIPELINE_IID__/${CI_PIPELINE_IID}/" k8s-stage-deploy.yml
+#     # - kubectl apply -f k8s-stage-deploy.yml
+#     # - kubectl describe po my-first-aspnet-ci
+#     - exit 0
+#   dependencies:
+#     - build_test
 
-test:
-  stage: test
-  script: 
-    - exit 0
-  dependencies:
-    - deploy_stage_test
+# test:
+#   stage: test
+#   script: 
+#     - exit 0
+#   dependencies:
+#     - deploy_stage_test
 
-deploy_production:
-  stage: deploy-prod
-  environment:
-    name: Prod
-  script: 
-    - echo "Deploy to Prod server"
-    - env
-    - apk add --no-cache curl
-    - curl -LO $K8S_STABLE_VERSION_URL
-    - chmod +x ./kubectl
-    - mv ./kubectl /usr/local/bin/kubectl
-    - mkdir ~/.kube
-    - cp $KUBECONFIG ~/.kube/config
-    - cat ~/.kube/config
-    - kubectl cluster-info
-    - kubectl get nodes
-    - sed -i "s/__CI_PIPELINE_IID__/${CI_PIPELINE_IID}/" k8s-prod-deploy.yml
-    - kubectl apply -f k8s-prod-deploy.yml
-    - kubectl describe po my-first-aspnet-ci-prod
-  dependencies:
-    - test
+# deploy_production:
+#   stage: deploy-prod
+#   environment:
+#     name: Prod
+#   script: 
+#     - echo "Deploy to Prod server"
+#     - env
+#     - apk add --no-cache curl
+#     - curl -LO $K8S_STABLE_VERSION_URL
+#     - chmod +x ./kubectl
+#     - mv ./kubectl /usr/local/bin/kubectl
+#     - mkdir ~/.kube
+#     - cp $KUBECONFIG ~/.kube/config
+#     - cat ~/.kube/config
+#     - kubectl cluster-info
+#     - kubectl get nodes
+#     - sed -i "s/__CI_PIPELINE_IID__/${CI_PIPELINE_IID}/" k8s-prod-deploy.yml
+#     - kubectl apply -f k8s-prod-deploy.yml
+#     - kubectl describe po my-first-aspnet-ci-prod
+#   dependencies:
+#     - test
 
