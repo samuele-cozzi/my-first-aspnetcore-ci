@@ -1,0 +1,27 @@
+FROM microsoft/aspnetcore AS base
+WORKDIR /app
+
+FROM microsoft/aspnetcore-build AS build
+WORKDIR /src
+COPY FooApi.sln ./
+COPY FooApi/ ./FooApi
+COPY FooApi.unittest/ ./FooApi.unittest/
+
+#RUN dotnet restore
+
+WORKDIR /src/FooApi.unittest
+RUN dotnet restore
+#RUN dotnet build -c Release -o /app
+RUN dotnet test -c Release
+
+WORKDIR /src/FooApi
+RUN dotnet restore
+RUN dotnet build -c Release -o /app
+
+FROM build AS publish
+RUN dotnet publish -c Release -o /app
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app .
+ENTRYPOINT ["dotnet", "FooApi.dll"]

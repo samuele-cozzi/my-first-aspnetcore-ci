@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-first-aspnet-ci-prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-first-aspnet-ci-prod
+  template:
+    metadata:
+      labels:
+        app: my-first-aspnet-ci-prod
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: my-first-aspnet-ci-prod
+        image: samuelecozzi/my-first-aspnet-docker:webapi.v__CI_PIPELINE_IID__
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: innersource-samuelecozzi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-first-aspnet-ci-prod 
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 40.118.126.110
+  ports:
+  - port: 80
+  selector:
+    app: my-first-aspnet-ci-prod
