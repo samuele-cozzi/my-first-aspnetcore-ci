@@ -24,9 +24,9 @@ steps:
 
       # build_test:
       docker login -u samuelecozzi -p $(docker_repo_pwd)
-      docker build --pull -t $(docker_image):$(docker_test_image) ./source/FooApi.e2etest
-      docker tag $(docker_image):$(docker_test_image) $(docker_image):$(docker_test_image).v$(Build.BuildId)
-      docker push $(docker_image):$(docker_test_image).v$(Build.BuildId)
+      docker build --pull -t $(docker_image_test):$(docker_test_image) ./source/FooApi.e2etest
+      docker tag $(docker_image_test):$(docker_test_image) $(docker_image_test):$(docker_test_image).v$(Build.BuildId)
+      docker push $(docker_image_test):$(docker_test_image).v$(Build.BuildId)
       #- exit 0
 
   # - bash: |
