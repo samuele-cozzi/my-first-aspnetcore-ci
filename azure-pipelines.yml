@@ -28,6 +28,11 @@ steps:
       docker tag $(docker_image_test):$(docker_test_image) $(docker_image_test):$(docker_test_image).v$(Build.BuildId)
       docker push $(docker_image_test):$(docker_test_image).v$(Build.BuildId)
       #- exit 0
+  - task: PublishBuildArtifacts@1
+    displayName: 'publish yaml folder as an artifact'
+    inputs:
+      artifactName: 'yaml'
+      pathToPublish: 'yaml'
 
   # - bash: |
   #     # deploy_stage_api:
