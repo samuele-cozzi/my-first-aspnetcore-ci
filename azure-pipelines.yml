@@ -29,22 +29,22 @@ steps:
       docker push $(docker_image):$(docker_test_image).v$(Build.BuildId)
       #- exit 0
 
-  - bash: |
-      # deploy_stage_api:
-      echo "Deploy to Stage server"
-      env
-      apk add --no-cache curl
-      curl -LO $(K8S_STABLE_VERSION_URL)
-      chmod +x ./kubectl
-      mv ./kubectl /usr/local/bin/kubectl
-      mkdir ~/.kube
-      cp $(KUBECONFIG) ~/.kube/config
-      cat ~/.kube/config
-      kubectl cluster-info
-      kubectl get nodes
-      sed -i "s/__Build.BuildId__/${Build.BuildId}/" k8s-stage-deploy.yml
-      kubectl apply -f k8s-stage-deploy.yml
-      kubectl describe po my-first-aspnet-ci
+  # - bash: |
+  #     # deploy_stage_api:
+  #     echo "Deploy to Stage server"
+  #     env
+  #     apk add --no-cache curl
+  #     curl -LO $(K8S_STABLE_VERSION_URL)
+  #     chmod +x ./kubectl
+  #     mv ./kubectl /usr/local/bin/kubectl
+  #     mkdir ~/.kube
+  #     cp $(KUBECONFIG) ~/.kube/config
+  #     cat ~/.kube/config
+  #     kubectl cluster-info
+  #     kubectl get nodes
+  #     sed -i "s/__Build.BuildId__/${Build.BuildId}/" k8s-stage-deploy.yml
+  #     kubectl apply -f k8s-stage-deploy.yml
+  #     kubectl describe po my-first-aspnet-ci
 
 
       # # deploy_production:
