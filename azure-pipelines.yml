@@ -18,15 +18,15 @@ steps:
       # build_api
       docker login -u samuelecozzi -p $(docker_repo_pwd)
       docker build --pull -t $(docker_image):$(docker_stage_image) ./source
-      docker tag $(docker_image):$(docker_stage_image) $(docker_image):$(docker_stage_image).v$(CI_PIPELINE_IID)
-      docker push $(docker_image):$(docker_stage_image).v$(CI_PIPELINE_IID)
+      docker tag $(docker_image):$(docker_stage_image) $(docker_image):$(docker_stage_image).v$(Build.BuildId)
+      docker push $(docker_image):$(docker_stage_image).v$(Build.BuildId)
       #- exit 0
 
       # build_test:
       docker login -u samuelecozzi -p $(docker_repo_pwd)
       docker build --pull -t $(docker_image):$(docker_test_image) ./source/FooApi.e2etest
-      docker tag $(docker_image):$(docker_test_image) $(docker_image):$(docker_test_image).v$(CI_PIPELINE_IID)
-      docker push $(docker_image):$(docker_test_image).v$(CI_PIPELINE_IID)
+      docker tag $(docker_image):$(docker_test_image) $(docker_image):$(docker_test_image).v$(Build.BuildId)
+      docker push $(docker_image):$(docker_test_image).v$(Build.BuildId)
       #- exit 0
 
   - bash: |
@@ -42,7 +42,7 @@ steps:
       cat ~/.kube/config
       kubectl cluster-info
       kubectl get nodes
-      sed -i "s/__CI_PIPELINE_IID__/${CI_PIPELINE_IID}/" k8s-stage-deploy.yml
+      sed -i "s/__Build.BuildId__/${Build.BuildId}/" k8s-stage-deploy.yml
       kubectl apply -f k8s-stage-deploy.yml
       kubectl describe po my-first-aspnet-ci
 
