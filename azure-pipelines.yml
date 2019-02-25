@@ -26,9 +26,10 @@ steps:
       docker login -u samuelecozzi -p $(docker_repo_pwd)
       docker build --pull -t $(docker_image):build ./source
       #rename the previuos build
-      docker tag $(docker_image):latest $(docker_image):v$(Build.BuildId)
+      docker tag $(docker_image):build $(docker_image):v$(Build.BuildId)
       #tag last build
       docker tag $(docker_image):build $(docker_image):latest
+      docker push $(docker_image):v$(Build.BuildId)
       docker push $(docker_image):latest
       #- exit 0
 
@@ -39,15 +40,15 @@ steps:
       # docker push $(docker_image_test):$(docker_test_image).v$(Build.BuildId)
       # #- exit 0
 
-      # build_api
-      docker login -u samuelecozzi -p $(docker_repo_pwd)
-      docker build --pull -t $(docker_image_test):build ./source
-      #rename the previuos build
-      #docker tag $(docker_image):latest $(docker_image):v$(Build.BuildId)
-      #tag last build
-      docker tag $(docker_image):build $(docker_image):latest
-      docker push $(docker_image):latest
-      #- exit 0
+      # # build_api
+      # docker login -u samuelecozzi -p $(docker_repo_pwd)
+      # docker build --pull -t $(docker_image_test):build ./source
+      # #rename the previuos build
+      # #docker tag $(docker_image):latest $(docker_image):v$(Build.BuildId)
+      # #tag last build
+      # docker tag $(docker_image):build $(docker_image):latest
+      # docker push $(docker_image):latest
+      # #- exit 0
 
   - task: PublishBuildArtifacts@1
     displayName: 'publish yaml folder as an artifact'
