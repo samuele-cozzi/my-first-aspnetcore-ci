@@ -27,7 +27,7 @@ steps:
       docker build --pull -t $(docker_image):latest ./source
       #docker tag $(docker_image):latest $(docker_image):v$(Build.BuildId)
       #docker tag $(docker_image):$(docker_stage_image) $(docker_image):$(docker_stage_image).latest
-      docker push $(docker_image):$(docker_stage_image).latest
+      docker push $(docker_image):latest
       #- exit 0
 
       # # build_test:
