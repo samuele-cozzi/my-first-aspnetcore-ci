@@ -15,19 +15,27 @@ variables:
 
 steps:
   - script: |
+      # # build_api
+      # docker login -u samuelecozzi -p $(docker_repo_pwd)
+      # docker build --pull -t $(docker_image):$(docker_stage_image) ./source
+      # docker tag $(docker_image):$(docker_stage_image) $(docker_image):$(docker_stage_image).v$(Build.BuildId)
+      # docker push $(docker_image):$(docker_stage_image).v$(Build.BuildId)
+      # #- exit 0
+
       # build_api
       docker login -u samuelecozzi -p $(docker_repo_pwd)
-      docker build --pull -t $(docker_image):$(docker_stage_image) ./source
-      docker tag $(docker_image):$(docker_stage_image) $(docker_image):$(docker_stage_image).v$(Build.BuildId)
-      docker push $(docker_image):$(docker_stage_image).v$(Build.BuildId)
+      docker build --pull -t $(docker_image):latest ./source
+      #docker tag $(docker_image):latest $(docker_image):v$(Build.BuildId)
+      #docker tag $(docker_image):$(docker_stage_image) $(docker_image):$(docker_stage_image).latest
+      docker push $(docker_image):$(docker_stage_image).latest
       #- exit 0
 
-      # build_test:
-      docker login -u samuelecozzi -p $(docker_repo_pwd)
-      docker build --pull -t $(docker_image_test):$(docker_test_image) ./source/FooApi.e2etest
-      docker tag $(docker_image_test):$(docker_test_image) $(docker_image_test):$(docker_test_image).v$(Build.BuildId)
-      docker push $(docker_image_test):$(docker_test_image).v$(Build.BuildId)
-      #- exit 0
+      # # build_test:
+      # docker login -u samuelecozzi -p $(docker_repo_pwd)
+      # docker build --pull -t $(docker_image_test):$(docker_test_image) ./source/FooApi.e2etest
+      # docker tag $(docker_image_test):$(docker_test_image) $(docker_image_test):$(docker_test_image).v$(Build.BuildId)
+      # docker push $(docker_image_test):$(docker_test_image).v$(Build.BuildId)
+      # #- exit 0
   - task: PublishBuildArtifacts@1
     displayName: 'publish yaml folder as an artifact'
     inputs:
