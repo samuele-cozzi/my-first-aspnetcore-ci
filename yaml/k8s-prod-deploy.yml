@@ -15,7 +15,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: my-first-aspnet-ci-prod
-        image: samuelecozzi/my-first-aspnet-docker:webapi.v17
+        image: samuelecozzi/my-first-aspnet-docker:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80
