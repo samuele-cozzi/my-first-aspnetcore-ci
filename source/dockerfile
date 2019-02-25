@@ -4,7 +4,6 @@ WORKDIR /app
 FROM microsoft/aspnetcore-build AS build
 WORKDIR /src
 COPY FooApi.sln ./
-COPY k8s-prod-deploy.yml ./
 COPY FooApi/ ./FooApi
 COPY FooApi.unittest/ ./FooApi.unittest/
 
