@@ -28,7 +28,7 @@ metadata:
   name: my-first-aspnet-ci-prod 
 spec:
   type: LoadBalancer
-  loadBalancerIP: 51.144.238.1
+  loadBalancerIP: 51.144.43.194
   ports:
   - port: 80
   selector:
