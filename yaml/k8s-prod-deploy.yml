@@ -32,4 +32,4 @@ spec:
   ports:
   - port: 80
   selector:
-    app: my-first-aspnet-ci-prod
+    app: my-first-aspnet-ci-prod 
