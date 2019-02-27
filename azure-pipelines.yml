@@ -10,10 +10,22 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 variables:
-  buildConfiguration: 'Release'
-  K8S_STABLE_VERSION_URL: https://storage.googleapis.com/kubernetes-release/release/v1.10.4/bin/linux/amd64/kubectl
+  unittest_prj: 'source/FooApi.unittest'
 
 steps:
+  #restore
+  - script: dotnet restore $(unittest_prj)
+  #build
+  - script: dotnet build $(unittest_prj)
+  #test
+  - script: dotnet test $(unittest_prj) --logger trx --collect "Code coverage"
+  #publish test
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testRunner: VSTest
+      testResultsFiles: '**/*.trx'
+
   - script: |
       # build_api
       docker login -u samuelecozzi -p $(docker_repo_pwd)
