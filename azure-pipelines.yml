@@ -13,18 +13,28 @@ variables:
   unittest_prj: 'source/FooApi.unittest'
 
 steps:
-  #restore
+  
   - script: dotnet restore $(unittest_prj)
-  #build
+    displayName: 'Restore'
+  
   - script: dotnet build $(unittest_prj)
-  #test
-  - script: dotnet test $(unittest_prj) --logger trx --collect "Code coverage"
-  #publish test
+    displayName: 'Build'
+  
+    #- script: dotnet test $(unittest_prj) --logger trx --collect "Code coverage"
+  - script: dotnet test $(unittest_prj) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+    displayName: 'Unit test with coverage'
+  
   - task: PublishTestResults@2
     condition: succeededOrFailed()
     inputs:
       testRunner: VSTest
       testResultsFiles: '**/*.trx'
+  
+  - task: PublishCodeCoverageResults@1
+    displayName: 'publish coverage results'
+    inputs:
+      codeCoverageTool: 'cobertura'
+      summaryFileLocation: '**/coverage.cobertura.xml'
 
   - script: |
       # build_api

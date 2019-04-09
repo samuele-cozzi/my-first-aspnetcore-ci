@@ -14,7 +14,7 @@ namespace FooApi.unittest
         [TestMethod]
         public void TestMethod2()
         {
-            Assert.IsTrue(true, "false");
+            Assert.IsTrue(false, "false");
         }
     }
 }
